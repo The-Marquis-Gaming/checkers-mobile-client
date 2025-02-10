@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -11,7 +12,6 @@ import 'package:gal/gal.dart';
 import 'package:checkers_mobile_client/dialog/auth_dialog.dart';
 import 'package:checkers_mobile_client/models/user.dart';
 import 'package:checkers_mobile_client/providers/app_state.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:checkers_mobile_client/router/route_path.dart';
 import 'package:checkers_mobile_client/services/snackbar_service.dart';
 import 'package:checkers_mobile_client/widgets/profile_item.dart';
@@ -34,206 +34,178 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final starknet = ref.watch(starknetProvider);
     return Scaffold(
       backgroundColor: const Color(0xFF121212), // Background color
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: user == null
-            ? Center(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      width: 1.8,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.5),
-                    ),
-                  ),
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        useRootNavigator: false,
-                        builder: (ctx) => const AuthDialog());
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 50,
+              ),
+              Text(
+                'Edit profile',
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(fontWeight: FontWeight.w900),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Card(
+                    elevation: 8.0,
+                    color: const Color(0xff212329),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(36),
                       ),
-                    ),
-                  ),
-                ),
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      'Edit profile',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.w900),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Card(
-                          elevation: 8.0,
-                          color: const Color(0xff212329),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(36),
-                            ),
-                            child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 50,
-                                      backgroundImage: AssetImage(
-                                          'assets/images/avatar.png'), // Add your avatar image in assets folder
-                                      backgroundColor: Colors.transparent,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        user.email,
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge!
-                                            .copyWith(
-                                                fontWeight: FontWeight.w900),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Card(
-                          elevation: 8.0,
-                          color: const Color(0xff212329),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: SvgPicture.asset(
-                                          'assets/svg/wallet_icon.svg'),
-                                    ),
-                                    const Text('Wallet Address'),
-                                  ],
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const CircleAvatar(
+                                radius: 50,
+                                backgroundImage: AssetImage(
+                                    'assets/images/avatar.png'), // Add your avatar image in assets folder
+                                backgroundColor: Colors.transparent,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Text(
+                                  starknet.signerAccount!.accountAddress
+                                      .toHexString(),
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge!
+                                      .copyWith(fontWeight: FontWeight.w900),
                                 ),
-                                ReferralField(
-                                  label: '',
-                                  value: user.accountAddress,
-                                )
-                              ],
-                            ),
+                              ),
+                            ],
                           )),
                     ),
-                    ProfileItem(
-                        icon: SvgPicture.asset('assets/svg/invite_friend.svg'),
-                        title: 'Invite Friend',
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            useRootNavigator: false,
-                            builder: (context) =>
-                                InviteFriendDialog(user: user),
-                          );
-                        }),
-                    verticalSpace(8.0),
-                    ProfileItem(
-                      icon: const Icon(Icons.help_outline_rounded),
-                      title: 'Help and Support',
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          useRootNavigator: false,
-                          builder: (context) => AlertDialog(
-                            title: Text('Help and Support'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("Contact us at support@themarquis.xyz"),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    verticalSpace(8.0),
-                    ProfileItem(
-                      icon: Icon(
-                        Icons.logout,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      title: 'Log Out',
-                      textColor: Theme.of(context).colorScheme.primary,
-                      onTap: () {
-                        ref.read(appStateProvider.notifier).logout();
-                      },
-                    ),
-                    verticalSpace(8.0),
-                    ProfileItem(
-                      icon: SvgPicture.asset('assets/svg/trash_icon.svg'),
-                      title: 'Delete Account',
-                      textColor: Colors.red,
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          useRootNavigator: false,
-                          builder: (context) => AlertDialog(
-                            title: Text('Delete Account'),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                    "Contact us at support@themarquis.xyz to delete your account."),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                  ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Card(
+                    elevation: 8.0,
+                    color: const Color(0xff212329),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                    'assets/svg/wallet_icon.svg'),
+                              ),
+                              const Text('Wallet Address'),
+                            ],
+                          ),
+                          ReferralField(
+                            label: '',
+                            value: starknet.signerAccount!.accountAddress
+                                .toHexString(),
+                          )
+                        ],
+                      ),
+                    )),
+              ),
+              // ProfileItem(
+              //     icon: SvgPicture.asset('assets/svg/invite_friend.svg'),
+              //     title: 'Invite Friend',
+              //     onTap: () {
+              //       showDialog(
+              //         context: context,
+              //         useRootNavigator: false,
+              //         builder: (context) => InviteFriendDialog(
+              //             user: ),
+              //       );
+              //     }),
+              // verticalSpace(8.0),
+              ProfileItem(
+                icon: const Icon(Icons.help_outline_rounded),
+                title: 'Help and Support',
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    useRootNavigator: false,
+                    builder: (context) => AlertDialog(
+                      title: Text('Help and Support'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text("Contact us at support@themarquis.xyz"),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              verticalSpace(8.0),
+              ProfileItem(
+                icon: Icon(
+                  Icons.logout,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: 'Log Out',
+                textColor: Theme.of(context).colorScheme.primary,
+                onTap: () {
+                  ref.read(starknetProvider.notifier).logout();
+                },
+              ),
+              verticalSpace(8.0),
+              ProfileItem(
+                icon: SvgPicture.asset('assets/svg/trash_icon.svg'),
+                title: 'Delete Account',
+                textColor: Colors.red,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    useRootNavigator: false,
+                    builder: (context) => AlertDialog(
+                      title: Text('Delete Account'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              "Contact us at support@themarquis.xyz to delete your account."),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

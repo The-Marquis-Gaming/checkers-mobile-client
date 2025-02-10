@@ -1,6 +1,7 @@
 import 'package:checkers_mobile_client/games/checkers/views/widgets/chevron_border.dart';
 import 'package:checkers_mobile_client/games/checkers/views/widgets/divider_shape.dart';
 import 'package:checkers_mobile_client/games/checkers/views/widgets/vertical_stepper.dart';
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,8 +9,20 @@ import 'package:checkers_mobile_client/games/checkers/checkers_game_controller.d
 import 'package:checkers_mobile_client/games/checkers/providers/checkers_provider.dart';
 import 'package:checkers_mobile_client/games/checkers/views/widgets/checkers_radio.dart';
 import 'package:checkers_mobile_client/models/enums.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:checkers_mobile_client/widgets/error_dialog.dart';
+
+const supportedTokens = [
+  {
+    "address":
+        "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+    "name": "STRK"
+  },
+  {
+    "address":
+        "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
+    "name": "ETH"
+  }
+];
 
 class CheckersCreateGame extends ConsumerStatefulWidget {
   final CheckersGameController _gameController;
@@ -234,9 +247,11 @@ class _CheckersCreateGameState extends ConsumerState<CheckersCreateGame> {
   }
 
   Widget _selectPlayAmount(double Function(double height) scaledHeight) {
-    return FutureBuilder(
+    return FutureBuilder<List<Map<String, String>>>(
       future: _supportedTokens.isEmpty
-          ? ref.read(userProvider.notifier).getSupportedTokens()
+          ? () async {
+              return supportedTokens;
+            }()
           : null,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -377,7 +392,7 @@ class _CheckersCreateGameState extends ConsumerState<CheckersCreateGame> {
               future: !_shouldRetrieveBalance
                   ? null
                   : ref
-                      .read(userProvider.notifier)
+                      .read(starknetProvider.notifier)
                       .getTokenBalance(_selectedTokenAddress!)
                       .whenComplete(() => _shouldRetrieveBalance = false),
               builder: (context, snapshot) {
@@ -387,7 +402,7 @@ class _CheckersCreateGameState extends ConsumerState<CheckersCreateGame> {
                   );
                 }
                 if (snapshot.hasData) {
-                  _selectedTokenBalance = snapshot.data!.toDouble();
+                  _selectedTokenBalance = snapshot.data!.toBigInt().toDouble();
                 }
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 26),

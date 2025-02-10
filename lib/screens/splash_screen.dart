@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:checkers_mobile_client/providers/app_state.dart';
 import 'package:checkers_mobile_client/providers/starknet.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:upgrader/upgrader.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -36,7 +35,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           // }
           if (ref.read(appStateProvider).autoLoginResult == null) {
             await ref.read(starknetProvider.notifier).initAccount();
-            await ref.read(appStateProvider.notifier).tryAutoLogin();
           }
           // if (ref.read(userProvider) != null) {
           //   ref.read(appStateProvider.notifier).setAutoLogin(true);
@@ -56,8 +54,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     padding: EdgeInsets.all(8.0),
                     child: CircularProgressIndicator(),
                   ),
-                if (ref.watch(userProvider) == null)
-                  const Text("Fetching user..."),
                 if (snapshot.error != null)
                   Text(
                     snapshot.error.toString(),

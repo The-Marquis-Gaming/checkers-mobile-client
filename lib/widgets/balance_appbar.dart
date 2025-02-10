@@ -1,8 +1,8 @@
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:checkers_mobile_client/providers/app_state.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 
 import 'gradient_separator.dart';
 import 'user_points_widget.dart';
@@ -31,7 +31,7 @@ class _BalanceAppBarState extends ConsumerState<BalanceAppBar> {
           children: [
             const UserPointsWidget(),
             const SizedBox(width: 8.0),
-            ref.watch(userProvider) == null
+            ref.watch(starknetProvider).signerAccount == null
                 ? Container()
                 : Expanded(
                     child: Container(
@@ -80,10 +80,12 @@ class _BalanceAppBarState extends ConsumerState<BalanceAppBar> {
                                   ),
                                   const SizedBox(width: 5),
                                   FutureBuilder<BigInt>(
-                                    future: ref
-                                        .read(userProvider.notifier)
-                                        .getTokenBalance(
-                                            "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"),
+                                    future: () async {
+                                      return (await ref
+                                              .read(starknetProvider.notifier)
+                                              .getStrkBalance())
+                                          .toBigInt();
+                                    }(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -131,10 +133,13 @@ class _BalanceAppBarState extends ConsumerState<BalanceAppBar> {
                                   ),
                                   const SizedBox(width: 5),
                                   FutureBuilder<BigInt>(
-                                    future: ref
-                                        .read(userProvider.notifier)
-                                        .getTokenBalance(
-                                            "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"),
+                                    future: () async {
+                                      return (await ref
+                                              .read(starknetProvider.notifier)
+                                              .getTokenBalance(
+                                                  "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"))
+                                          .toBigInt();
+                                    }(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {

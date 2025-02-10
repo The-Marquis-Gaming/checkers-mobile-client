@@ -8,9 +8,6 @@ import 'package:checkers_mobile_client/games/checkers/views/screens/create_game/
 import 'package:checkers_mobile_client/games/checkers/views/screens/find_game/find_game_dialogue.dart';
 import 'package:checkers_mobile_client/games/checkers/views/screens/join_game/join_game_dialogue.dart';
 import 'package:checkers_mobile_client/games/checkers/views/widgets/checkers_menu_button_widget.dart';
-import 'package:checkers_mobile_client/games/checkers/views/widgets/chevron_border.dart';
-import 'package:checkers_mobile_client/games/checkers/views/widgets/divider_shape.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:checkers_mobile_client/widgets/balance_appbar.dart';
 import 'package:checkers_mobile_client/models/enums.dart';
 import 'package:checkers_mobile_client/providers/starknet.dart';
@@ -75,17 +72,7 @@ class CheckersHomeScreenState extends ConsumerState<CheckersHomeScreen> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    final user = ref.read(userProvider);
     final session = ref.watch(checkersSessionProvider);
-
-    if (user == null) {
-      Future.microtask(() {
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
-      });
-      return const Center(child: Text("Not Logged In"));
-    }
 
     return LayoutBuilder(
       builder: (context, constraints) {

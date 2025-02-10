@@ -398,6 +398,14 @@ class Starknet extends _$Starknet {
     }
     return receipt;
   }
+
+  Future<Uint256> getTokenBalance(String tokenAddress) async {
+    final balance = await ERC20(
+            account: state.signerAccount!,
+            address: Felt.fromHexString(tokenAddress))
+        .balanceOf(state.signerAccount!.accountAddress);
+    return balance;
+  }
 }
 
 // Constants

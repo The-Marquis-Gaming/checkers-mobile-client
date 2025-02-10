@@ -1,6 +1,6 @@
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -151,7 +151,12 @@ class _DepositDialogState extends ConsumerState<DepositDialog> {
               Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: QrImageView(
-                  data: ref.read(userProvider)?.accountAddress ?? "",
+                  data: ref
+                          .read(starknetProvider)
+                          .signerAccount
+                          ?.accountAddress
+                          .toHexString() ??
+                      "",
                   version: QrVersions.auto,
                   size: 200.0,
                   backgroundColor: Colors.white,

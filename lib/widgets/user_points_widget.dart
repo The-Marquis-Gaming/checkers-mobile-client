@@ -1,9 +1,9 @@
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:checkers_mobile_client/dialog/auth_dialog.dart';
 import 'package:checkers_mobile_client/widgets/ui_widgets.dart';
 
-import '../providers/user.dart';
 import 'gradient_separator.dart';
 
 class UserPointsWidget extends ConsumerStatefulWidget {
@@ -16,32 +16,18 @@ class UserPointsWidget extends ConsumerStatefulWidget {
 class _UserPointsWidgetState extends ConsumerState<UserPointsWidget> {
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
+    // final user = ref.watch(userProvider);
+    final starknet = ref.watch(starknetProvider);
     return GestureDetector(
-      onTap: user == null
-          ? () {
-              showDialog(
-                  context: context,
-                  useRootNavigator: false,
-                  builder: (c) => const AuthDialog());
-            }
-          : () {
-              //go to profile page
-            },
       child: Row(
         children: [
-          user == null
-              ? const Icon(
-                  Icons.person,
-                  size: 25,
-                )
-              : const CircleAvatar(
-                  radius: 15,
-                  backgroundImage: AssetImage(
-                    'assets/images/avatar.png',
-                  ), // Add your avatar image in assets folder
-                  backgroundColor: Colors.transparent,
-                ),
+          const CircleAvatar(
+            radius: 15,
+            backgroundImage: AssetImage(
+              'assets/images/avatar.png',
+            ), // Add your avatar image in assets folder
+            backgroundColor: Colors.transparent,
+          ),
           const SizedBox(
             width: 8,
           ),
@@ -49,7 +35,9 @@ class _UserPointsWidgetState extends ConsumerState<UserPointsWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user == null ? "LOGIN" : user.email.split("@").first,
+                starknet.signerAccount == null
+                    ? "No Account"
+                    : "0x...${starknet.signerAccount!.accountAddress.toHexString().split("0x").last}",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -57,7 +45,7 @@ class _UserPointsWidgetState extends ConsumerState<UserPointsWidget> {
                   fontFamily: 'Orbitron',
                 ),
               ),
-              user == null
+              starknet.signerAccount == null
                   ? Container()
                   : Row(
                       children: [
@@ -67,7 +55,7 @@ class _UserPointsWidgetState extends ConsumerState<UserPointsWidget> {
                         ),
                         const SizedBox(width: 5),
                         Text(
-                          '${user.points.toString()} Pts.',
+                          'XXX Pts.',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
@@ -78,7 +66,9 @@ class _UserPointsWidgetState extends ConsumerState<UserPointsWidget> {
             ],
           ),
           horizontalSpace(8.0),
-          user == null ? Container() : const GradientSeparator(),
+          starknet.signerAccount == null
+              ? Container()
+              : const GradientSeparator(),
         ],
       ),
     );

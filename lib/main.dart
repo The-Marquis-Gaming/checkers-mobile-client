@@ -8,7 +8,6 @@ import 'package:checkers_mobile_client/models/app_state.dart';
 import 'package:checkers_mobile_client/models/user.dart';
 import 'package:checkers_mobile_client/providers/app_state.dart';
 import 'package:checkers_mobile_client/providers/starknet.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:checkers_mobile_client/router/route_information_parser.dart';
 import 'package:checkers_mobile_client/router/router_delegate.dart';
 import 'package:upgrader/upgrader.dart';
@@ -61,7 +60,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appState = ref.watch(appStateProvider);
-    ref.watch(userProvider);
     ref.watch(starknetProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: appState.isSandbox,

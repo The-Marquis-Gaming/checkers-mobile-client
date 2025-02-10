@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:checkers_mobile_client/games/checkers/views/screens/create_game/checkers_create_game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:checkers_mobile_client/models/marquis_game.dart';
 import 'package:checkers_mobile_client/games/checkers/components/checkers_board.dart';
 import 'package:checkers_mobile_client/games/checkers/models/checkers_session.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:checkers_mobile_client/providers/user.dart';
 import 'package:checkers_mobile_client/providers/starknet.dart';
 
 class CheckersGameController extends MarquisGameController {
@@ -402,9 +402,9 @@ class _GameOverDialogState extends ConsumerState<GameOverDialog> {
                       children: [
                         if (widget.tokenAmount != '0')
                           FutureBuilder(
-                            future: ref
-                                .read(userProvider.notifier)
-                                .getSupportedTokens(),
+                            future: () async {
+                              return supportedTokens;
+                            }(),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:checkers_mobile_client/dialog/auth_dialog.dart';
 import 'package:checkers_mobile_client/providers/app_state.dart';
+import 'package:checkers_mobile_client/providers/starknet.dart';
 import 'package:checkers_mobile_client/router/route_path.dart';
 import 'package:checkers_mobile_client/widgets/balance_appbar.dart';
 import 'package:checkers_mobile_client/widgets/locked_game_widget.dart';
@@ -65,7 +66,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           BoxDecoration(borderRadius: BorderRadius.circular(8)),
                       child: Stack(
                         children: [
-                          Image.asset('assets/images/ludo.png',
+                          Image.asset('assets/images/checkers.png',
                               fit: BoxFit.fitWidth,
                               color: Colors.black.withAlpha(100),
                               colorBlendMode: BlendMode.darken),
@@ -77,9 +78,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Dice Game',
+                                  Text('Board Game',
                                       style: TextStyle(fontSize: 12)),
-                                  Text('Ludo',
+                                  Text('Checkers',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold))
@@ -93,17 +94,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: IconButton(
-                                onPressed: () {
-                                  if (!ref.read(appStateProvider).isAuth) {
-                                    showDialog(
-                                        context: context,
-                                        useRootNavigator: false,
-                                        builder: (ctx) => const AuthDialog());
+                                onPressed: () async {
+                                  final starknet = ref.read(starknetProvider);
+                                  if (starknet.signerAccount == null) {
+                                    await ref
+                                        .read(starknetProvider.notifier)
+                                        .initAccount();
                                     return;
                                   }
                                   ref
                                       .read(appStateProvider.notifier)
-                                      .selectGame("ludo");
+                                      .selectGame("checkers");
                                 },
                                 icon: const Icon(Icons.arrow_forward, size: 32),
                                 style: IconButton.styleFrom(
@@ -119,48 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.0),
-                            border: Border.all(color: const Color(0xff181B25))),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            verticalSpace(8.0),
-                            const LockedGameWidget(
-                              showIconButton: true,
-                              title: 'Checkers',
-                              subTitle: 'Board Game',
-                              image: 'assets/images/checkers.png',
-                            ),
-                            const LockedGameWidget(
-                              title: 'Yahtzee',
-                              subTitle: 'Dice Game',
-                              image: 'assets/images/yahtzee.png',
-                            ),
-                            const LockedGameWidget(
-                              title: '6 nimmt',
-                              subTitle: 'Card Game',
-                              image: 'assets/images/6nimmt.png',
-                            )
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: 100,
-                        child: SvgPicture.asset(
-                          'assets/svg/locked_badge.svg',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 24.0),
               ],
             ),
           ],
