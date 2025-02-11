@@ -8,7 +8,7 @@
 PRODUCT_NAME = checkers_mobile_client
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.checkersMobileClient
+PRODUCT_BUNDLE_IDENTIFIER = com.themarquis.checkersMobileClient
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 com.themarquis. All rights reserved.
